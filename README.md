@@ -1,7 +1,3 @@
-# alertmanager-dingtalk-hook :lemon: :tangerine: :cherries: :cake: :grapes: :watermelon: :strawberry: :corn: :peach:
-AlertManager 钉钉报警简单服务示例
-
-## 运行
 ### 使用`Docker`运行
 ```shell
 $ docker run -p 5000:5000 --name -e ROBOT_TOKEN=<钉钉机器人TOKEN> -e ROBOT_SECRET=<钉钉机器人安全SECRET> -e LOG_LEVEL=debug -e PROME_URL=prometheus.local dingtalk-hook -d cnych/alertmanager-dingtalk-hook:v0.3.3
@@ -13,8 +9,6 @@ $ docker run -p 5000:5000 --name -e ROBOT_TOKEN=<钉钉机器人TOKEN> -e ROBOT_
 * PROME_URL：手动指定跳转后的 Promethues 地址，默认会是 Pod 的地址
 * LOG_LEVEL：日志级别，设置成 `debug` 可以看到 AlertManager WebHook 发送的数据，方便调试使用，不需调试可以不设置该环境变量
 * ROBOT_SECRET：为钉钉机器人的安全设置密钥，机器人安全设置页面，加签一栏下面显示的 SEC 开头的字符串
-
-![dingtalk secret](https://dingtalkdoc.oss-cn-beijing.aliyuncs.com/images/0.0.184/1572261283991-f8e35f4d-6997-4a02-9704-843ee8f97464.png)
 
 
 ### 在`Kubernetes`集群中运行

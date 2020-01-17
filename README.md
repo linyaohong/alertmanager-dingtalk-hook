@@ -1,7 +1,7 @@
 # alertmanager-dingtalk-hook :lemon: :tangerine: :cherries: :cake: :grapes: :watermelon: :strawberry: :corn: :peach:
 AlertManager 钉钉报警简单服务示例
 
-![alertmanager dingtalk message demo](https://bxdc-static.oss-cn-beijing.aliyuncs.com/images/dingtalk-hook-demo.png)
+![alertmanager dingtalk message demo]
 
 ## 运行
 ### 使用`Docker`运行

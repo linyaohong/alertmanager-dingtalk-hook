@@ -1,3 +1,4 @@
+
 import os
 import json
 import logging
@@ -14,7 +15,7 @@ from flask import request
 
 app = Flask(__name__)
 
-url = 'https://oapi.dingtalk.com/robot/send?access_token=c1248ea4211978447f55e69ca861913dff58f6e001ca801dab7d59bfd11a8b9&timestamp=1579252849336&sign=OznWGlI%2B2aws6Vgpna9t0r8IBdcxNh6ZjCB8GEzKwAk%3D'
+url = 'https://oapi.dingtalk.com/robot/send?access_token=c1248ea4211978447f55ce69ca861913dff58f6e001ca801dab7d59bfd11a8b9'
 
 @app.route('/', methods=['POST', 'GET'])
 def send():
@@ -27,20 +28,26 @@ def send():
         return 'weclome to use prometheus alertmanager dingtalk webhook server!'
 
 def send_alert(data):
-    timestamp = int(round(time.time() * 1000))
+    print('------------------------data--------------')
     print(data)
+    print('-------------------------------------')
+    timestamp = int(round(time.time() * 1000))
     alerts = data['alerts']
-    #print(alerts)
+    print(alerts)
     alert_name = alerts[0]['labels']['alertname']
-
+    print(alert_name)
+    alert_status = alerts[0]['status']
+    print(alert_status)
     def _mark_item(alert):
         labels = alert['labels']
         annotations = " "
         #for k, v in alert['annotations'].items():
         for k, v in alert['annotations'].items():
             #annotations += "{0}: {1}\n".format(k, v)
-            annotations += "\n"+v+"\n"
-        mark_item =  '\n\n' + annotations 
+            annotations += "{0}\n".format(v)
+            #annotations += "\n"+v+"\n"
+        #mark_item =  '\n\n' + annotations 
+        mark_item = "\n IP : " + labels['addr'] + '\n\n'+  "\n 环境 : " + labels['env'] + '\n\n'+ annotations  
         return mark_item
 
     def _mark_item_all(alerts):
@@ -48,7 +55,11 @@ def send_alert(data):
         for alert in alerts:
             mark_str = mark_str+_mark_item(alert)
         return mark_str
-    title = "告警:%s \n 实例数量: %d" % (alert_name, len(alerts))
+
+    if alert_status == 'resolved':
+        title = "告警恢复:%s" % (alert_name)
+    else:
+        title = "触发告警:%s ___ 实例数量: %d" % (alert_name, len(alerts))
 
     external_url = alerts[0]['generatorURL']
     prometheus_url = os.getenv('PROME_URL')
@@ -61,11 +72,11 @@ def send_alert(data):
         "markdown": {
             "title": title,
             #"text": title + "\n"  + _mark_item(alerts[0]) 
-            "text": title + "\n" +  _mark_item_all(alerts) + "\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\n"
+            "text": title + "\n" +  _mark_item_all(alerts) +  '\n\n'+  " 时间 : " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\n"
         }
     }
 
-    print('--------------------')
+    print('-----------------------------------')
     print(send_data)
     req = requests.post(url, json=send_data)
     result = req.json()

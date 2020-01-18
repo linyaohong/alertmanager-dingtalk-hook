@@ -1,4 +1,3 @@
-
 import os
 import json
 import logging
@@ -41,13 +40,14 @@ def send_alert(data):
     def _mark_item(alert):
         labels = alert['labels']
         annotations = " "
-        #for k, v in alert['annotations'].items():
         for k, v in alert['annotations'].items():
             #annotations += "{0}: {1}\n".format(k, v)
             annotations += "{0}\n".format(v)
             #annotations += "\n"+v+"\n"
-        #mark_item =  '\n\n' + annotations 
-        mark_item = "\n IP : " + labels['addr'] + '\n\n'+  "\n 环境 : " + labels['env'] + '\n\n'+ annotations  
+        if 'addr' in labels and 'env' in labels:
+            mark_item = "\n IP : " + labels['addr'] + '\n\n'+  "\n 环境 : " + labels['env'] + '\n\n'+ annotations  
+        else:
+            mark_item =  '\n\n'+ annotations  
         return mark_item
 
     def _mark_item_all(alerts):
@@ -59,7 +59,7 @@ def send_alert(data):
     if alert_status == 'resolved':
         title = "告警恢复:%s" % (alert_name)
     else:
-        title = "触发告警:%s ___ 实例数量: %d" % (alert_name, len(alerts))
+        title = "触发告警:%s"  (alert_name)
 
     external_url = alerts[0]['generatorURL']
     prometheus_url = os.getenv('PROME_URL')
@@ -71,7 +71,6 @@ def send_alert(data):
         "msgtype": "markdown",
         "markdown": {
             "title": title,
-            #"text": title + "\n"  + _mark_item(alerts[0]) 
             "text": title + "\n" +  _mark_item_all(alerts) +  '\n\n'+  " 时间 : " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\n"
         }
     }
